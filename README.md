@@ -15,6 +15,10 @@ Support using [palantir-java-format](https://github.com/palantir/palantir-java-f
 
 ## Release Notes
 
+### 0.1.0
+
+Change repo path setting key to "repoPath".
+
 ### 0.0.1
 
 Initial release.

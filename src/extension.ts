@@ -4,15 +4,15 @@ const { exec } = require('child_process');
 export function activate(context: vscode.ExtensionContext) {
 	let disposable = vscode.commands.registerCommand('extension.formatJavaFile', () => {
 		const config = vscode.workspace.getConfiguration('palantir-java-format');
-		const configPath = config.get<string>('configPath');
+		const repoPath = config.get<string>('repoPath');
 		const additionalArgs = config.get<string>('additionalArgs') || '';
 
-		if (!configPath) {
-			vscode.window.showErrorMessage('Palantir Java Format repo path is not set. Please configure "palantir-java-format.configPath" in settings.');
+		if (!repoPath) {
+			vscode.window.showErrorMessage('Palantir Java Format repo path is not set. Please configure "palantir-java-format.repoPath" in settings.');
 			return;
 		}
 
-		formatJavaFile(configPath, additionalArgs);
+		formatJavaFile(repoPath, additionalArgs);
 	});
 
 	context.subscriptions.push(disposable);
@@ -20,28 +20,28 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.languages.registerDocumentFormattingEditProvider('java', {
 		provideDocumentFormattingEdits(document: vscode.TextDocument): vscode.TextEdit[] {
 			const config = vscode.workspace.getConfiguration('palantir-java-format');
-			const configPath = config.get<string>('configPath');
+			const repoPath = config.get<string>('repoPath');
 			const additionalArgs = config.get<string>('additionalArgs') || '';
 
-			if (!configPath) {
-				vscode.window.showErrorMessage('Palantir Java Format repo path is not set. Please configure "palantir-java-format.configPath" in settings.');
+			if (!repoPath) {
+				vscode.window.showErrorMessage('Palantir Java Format repo path is not set. Please configure "palantir-java-format.repoPath" in settings.');
 				return [];
 			}
 
-			formatJavaFile(configPath, additionalArgs);
+			formatJavaFile(repoPath, additionalArgs);
 			return [];
 		}
 	});
 }
 
-function formatJavaFile(configPath: string, additionalArgs: string) {
+function formatJavaFile(repoPath: string, additionalArgs: string) {
 	vscode.window.activeTextEditor?.edit((editBuilder) => {
 		const editor = vscode.window.activeTextEditor;
 		if (editor) {
 			const document = editor.document;
 			const filePath = document.uri.fsPath;
 
-			const command = `cd ${configPath} && ./gradlew run --args="-i ${additionalArgs} ${filePath}"`;
+			const command = `cd ${repoPath} && ./gradlew run --args="-i ${additionalArgs} ${filePath}"`;
 			vscode.window.showInformationMessage(`Running command: ` + command);
 			exec(command, (error: any, stdout: any, stderr: any) => {
 				if (error) {

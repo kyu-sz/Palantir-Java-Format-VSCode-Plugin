@@ -2,8 +2,9 @@
   "name": "palantir-java-format",
   "displayName": "Palantir Java Format",
   "description": "Support palantir-java-format in VSCode",
-  "version": "0.0.1",
-  "publisher": "kaiyu",
+  "version": "0.1.0",
+  "publisher": "szykk1993",
+  "repository": "https://github.com/kyu-sz/Palantir-Java-Format-VSCode-Plugin",
   "engines": {
     "vscode": "^1.87.0"
   },
