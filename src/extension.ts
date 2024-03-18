@@ -1,26 +1,60 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+const { exec } = require('child_process');
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+	let disposable = vscode.commands.registerCommand('extension.formatJavaFile', () => {
+		const config = vscode.workspace.getConfiguration('palantir-java-format');
+		const configPath = config.get<string>('configPath');
+		const additionalArgs = config.get<string>('additionalArgs') || '';
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "palantir-java-format" is now active!');
+		if (!configPath) {
+			vscode.window.showErrorMessage('Palantir Java Format repo path is not set. Please configure "palantir-java-format.configPath" in settings.');
+			return;
+		}
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('palantir-java-format.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Palantir Java Format!');
+		formatJavaFile(configPath, additionalArgs);
 	});
 
 	context.subscriptions.push(disposable);
+
+	vscode.languages.registerDocumentFormattingEditProvider('java', {
+		provideDocumentFormattingEdits(document: vscode.TextDocument): vscode.TextEdit[] {
+			const config = vscode.workspace.getConfiguration('palantir-java-format');
+			const configPath = config.get<string>('configPath');
+			const additionalArgs = config.get<string>('additionalArgs') || '';
+
+			if (!configPath) {
+				vscode.window.showErrorMessage('Palantir Java Format repo path is not set. Please configure "palantir-java-format.configPath" in settings.');
+				return [];
+			}
+
+			formatJavaFile(configPath, additionalArgs);
+			return [];
+		}
+	});
 }
 
-// This method is called when your extension is deactivated
-export function deactivate() {}
+function formatJavaFile(configPath: string, additionalArgs: string) {
+	vscode.window.activeTextEditor?.edit((editBuilder) => {
+		const editor = vscode.window.activeTextEditor;
+		if (editor) {
+			const document = editor.document;
+			const filePath = document.uri.fsPath;
+
+			const command = `cd ${configPath} && ./gradlew run --args="-i ${additionalArgs} ${filePath}"`;
+			vscode.window.showInformationMessage(`Running command: ` + command);
+			exec(command, (error: any, stdout: any, stderr: any) => {
+				if (error) {
+					vscode.window.showErrorMessage(`Error: ${error.message}`);
+					return;
+				}
+				if (stderr) {
+					vscode.window.showErrorMessage(`Error occurred while formatting: ${stderr}`);
+					vscode.window.showErrorMessage(`stderr: ${stderr}`);
+					return;
+				}
+				editBuilder.replace(document.validateRange(new vscode.Range(0, 0, document.lineCount, 0)), stdout);
+			});
+		}
+	});
+}

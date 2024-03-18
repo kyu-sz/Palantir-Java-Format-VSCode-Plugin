@@ -3,21 +3,80 @@
   "displayName": "Palantir Java Format",
   "description": "Support palantir-java-format in VSCode",
   "version": "0.0.1",
+  "publisher": "kaiyu",
   "engines": {
     "vscode": "^1.87.0"
   },
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:extension.formatJavaFile"
+  ],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "palantir-java-format.helloWorld",
-        "title": "Hello World"
+    "configuration": {
+      "palantir-java-format.repoPath": {
+        "type": "string"
+      },
+      "palantir-java-format.additionalArgs": {
+        "type": "string",
+        "default": ""
       }
-    ]
+    },
+    "languages": [
+      {
+        "id": "java",
+        "extensions": [
+          ".java"
+        ],
+        "aliases": [
+          "Java",
+          "java"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "contributes": {
+      "jsonValidation": [
+        {
+          "fileMatch": "/path/to/palantir-java-format"
+        }
+      ],
+      "languages": [
+        {
+          "id": "java",
+          "extensions": [
+            ".java"
+          ],
+          "aliases": [
+            "Java",
+            "java"
+          ],
+          "configuration": "./language-configuration.json"
+        }
+      ],
+      "grammars": [
+        {
+          "language": "java",
+          "scopeName": "source.java",
+          "path": "./syntaxes/java.tmLanguage.json"
+        }
+      ],
+      "contributes": {
+        "jsonValidation": [
+          {
+            "fileMatch": "/path/to/palantir-java-format"
+          }
+        ]
+      },
+      "semanticTokens": {
+        "legend": {
+          "tokenTypes": [],
+          "tokenModifiers": []
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
