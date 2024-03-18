@@ -15,6 +15,10 @@ Support using [palantir-java-format](https://github.com/palantir/palantir-java-f
 
 ## Release Notes
 
+### 0.1.1
+
+Only show error messages when error occurs.
+
 ### 0.1.0
 
 Change repo path setting key to "repoPath".

@@ -45,12 +45,7 @@ function formatJavaFile(repoPath: string, additionalArgs: string) {
 			vscode.window.showInformationMessage(`Running command: ` + command);
 			exec(command, (error: any, stdout: any, stderr: any) => {
 				if (error) {
-					vscode.window.showErrorMessage(`Error: ${error.message}`);
-					return;
-				}
-				if (stderr) {
-					vscode.window.showErrorMessage(`Error occurred while formatting: ${stderr}`);
-					vscode.window.showErrorMessage(`stderr: ${stderr}`);
+					vscode.window.showErrorMessage(`Error occurred during formatting: ${error.message}\n${stderr}`);
 					return;
 				}
 				editBuilder.replace(document.validateRange(new vscode.Range(0, 0, document.lineCount, 0)), stdout);
