@@ -10,13 +10,14 @@ export function activate(context: vscode.ExtensionContext) {
 		const config = vscode.workspace.getConfiguration('palantir-java-format');
 		const repoPath = config.get<string>('repoPath');
 		const additionalArgs = config.get<string>('additionalArgs') || '';
+		const allDepsJarPath = config.get<string>('allDepsJarPath') || '';
 
 		if (!repoPath) {
 			vscode.window.showErrorMessage('Palantir Java Format repo path is not set. Please configure "palantir-java-format.repoPath" in settings.');
 			return;
 		}
 
-		formatJavaFile(repoPath, additionalArgs);
+		formatJavaFile(repoPath, additionalArgs, allDepsJarPath);
 	});
 
 	context.subscriptions.push(disposable);
@@ -26,38 +27,55 @@ export function activate(context: vscode.ExtensionContext) {
 			const config = vscode.workspace.getConfiguration('palantir-java-format');
 			const repoPath = config.get<string>('repoPath');
 			const additionalArgs = config.get<string>('additionalArgs') || '';
+			const allDepsJarPath = config.get<string>('allDepsJarPath') || '';
 
 			if (!repoPath) {
 				vscode.window.showErrorMessage('Palantir Java Format repo path is not set. Please configure "palantir-java-format.repoPath" in settings.');
 				return [];
 			}
 
-			formatJavaFile(repoPath, additionalArgs);
+			formatJavaFile(repoPath, additionalArgs, allDepsJarPath);
 			return [];
 		}
 	});
 }
 
-function formatJavaFile(repoPath: string, additionalArgs: string) {
+function formatJavaFile(repoPath: string, additionalArgs: string, allDepsJarPath: string) {
 	vscode.window.activeTextEditor?.edit((editBuilder) => {
 		const editor = vscode.window.activeTextEditor;
 		if (editor) {
 			const document = editor.document;
 			const filePath = document.uri.fsPath;
 
-			const command = `cd ${repoPath} && ./gradlew run --args="-i ${additionalArgs} ${filePath}"`;
-			outputChannel.appendLine(`Running command: ${command}`);
+			if (allDepsJarPath) {
+				const command = `java -jar ${allDepsJarPath} -i ${additionalArgs} ${filePath}`;
+				outputChannel.appendLine(`Running command: ${command}`);
 
-			exec(command, (error: any, stdout: any, stderr: any) => {
-				outputChannel.appendLine(stderr);
-				outputChannel.appendLine(stdout);
-				if (error) {
-					vscode.window.showErrorMessage(`Error occurred during formatting: ${error.message}\n${stderr}`);
-					outputChannel.appendLine(`Error occurred during formatting: ${error.message}\n${stderr}`);
-					return;
-				}
-				editBuilder.replace(document.validateRange(new vscode.Range(0, 0, document.lineCount, 0)), stdout);
-			});
+				exec(command, (error: any, stdout: any, stderr: any) => {
+					outputChannel.appendLine(stderr);
+					outputChannel.appendLine(stdout);
+					if (error) {
+						vscode.window.showErrorMessage(`Error occurred during formatting: ${error.message}\n${stderr}`);
+						outputChannel.appendLine(`Error occurred during formatting: ${error.message}\n${stderr}`);
+						return;
+					}
+					editBuilder.replace(document.validateRange(new vscode.Range(0, 0, document.lineCount, 0)), stdout);
+				});
+			} else {
+				const command = `cd ${repoPath} && ./gradlew run --args="-i ${additionalArgs} ${filePath}"`;
+				outputChannel.appendLine(`Running command: ${command}`);
+
+				exec(command, (error: any, stdout: any, stderr: any) => {
+					outputChannel.appendLine(stderr);
+					outputChannel.appendLine(stdout);
+					if (error) {
+						vscode.window.showErrorMessage(`Error occurred during formatting: ${error.message}\n${stderr}`);
+						outputChannel.appendLine(`Error occurred during formatting: ${error.message}\n${stderr}`);
+						return;
+					}
+					editBuilder.replace(document.validateRange(new vscode.Range(0, 0, document.lineCount, 0)), stdout);
+				});
+			}
 		}
 	});
 }

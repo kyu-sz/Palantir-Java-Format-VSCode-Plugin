@@ -15,6 +15,10 @@ Support using [palantir-java-format](https://github.com/palantir/palantir-java-f
 
 ## Release Notes
 
+### 0.2.0
+
+Allow using all-deps jar instead of `./gradlew run`.
+
 ### 0.1.4
 
 Show logs in output channel.
