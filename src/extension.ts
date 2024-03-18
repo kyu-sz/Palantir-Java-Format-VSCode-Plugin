@@ -1,7 +1,11 @@
 import * as vscode from 'vscode';
 const { exec } = require('child_process');
 
+let outputChannel: vscode.OutputChannel;
+
 export function activate(context: vscode.ExtensionContext) {
+	outputChannel = vscode.window.createOutputChannel('Palantir Java Format Output');
+
 	let disposable = vscode.commands.registerCommand('extension.formatJavaFile', () => {
 		const config = vscode.workspace.getConfiguration('palantir-java-format');
 		const repoPath = config.get<string>('repoPath');
@@ -42,10 +46,14 @@ function formatJavaFile(repoPath: string, additionalArgs: string) {
 			const filePath = document.uri.fsPath;
 
 			const command = `cd ${repoPath} && ./gradlew run --args="-i ${additionalArgs} ${filePath}"`;
-			vscode.window.showInformationMessage(`Running command: ` + command);
+			outputChannel.appendLine(`Running command: ${command}`);
+
 			exec(command, (error: any, stdout: any, stderr: any) => {
+				outputChannel.appendLine(stderr);
+				outputChannel.appendLine(stdout);
 				if (error) {
 					vscode.window.showErrorMessage(`Error occurred during formatting: ${error.message}\n${stderr}`);
+					outputChannel.appendLine(`Error occurred during formatting: ${error.message}\n${stderr}`);
 					return;
 				}
 				editBuilder.replace(document.validateRange(new vscode.Range(0, 0, document.lineCount, 0)), stdout);

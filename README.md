@@ -15,6 +15,10 @@ Support using [palantir-java-format](https://github.com/palantir/palantir-java-f
 
 ## Release Notes
 
+### 0.1.4
+
+Show logs in output channel.
+
 ### 0.1.3
 
 Add license.
