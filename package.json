@@ -2,29 +2,39 @@
   "name": "palantir-java-format",
   "displayName": "Palantir Java Format",
   "description": "Support palantir-java-format in VSCode",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "szykk1993",
   "repository": "https://github.com/kyu-sz/Palantir-Java-Format-VSCode-Plugin",
   "engines": {
     "vscode": "^1.87.0"
   },
   "categories": [
-    "Other"
+    "Formatters"
   ],
   "activationEvents": [
     "onCommand:extension.formatJavaFile"
   ],
   "main": "./out/extension.js",
   "contributes": {
-    "configuration": {
-      "palantir-java-format.repoPath": {
-        "type": "string"
-      },
-      "palantir-java-format.additionalArgs": {
-        "type": "string",
-        "default": ""
+    "configuration": [
+      {
+        "title": "Palantir Java Format for VS Code",
+        "properties": {
+          "palantir-java-format.repoPath": {
+            "type": "string",
+            "default": "",
+            "description": "Path to the palantir-java-format repository",
+            "scope": "window"
+          },
+          "palantir-java-format.additionalArgs": {
+            "type": "string",
+            "default": "",
+            "description": "Additional arguments to pass to palantir-java-format",
+            "scope": "window"
+          }
+        }
       }
-    },
+    ],
     "languages": [
       {
         "id": "java",
