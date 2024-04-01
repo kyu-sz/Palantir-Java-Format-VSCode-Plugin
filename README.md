@@ -15,6 +15,10 @@ Support using [palantir-java-format](https://github.com/palantir/palantir-java-f
 
 ## Release Notes
 
+### 0.3.1
+
+Correct line range option passed to palantir-java-format.
+
 ### 0.3.0
 
 Support formatting selected lines, hence supporting formatting modified lines.

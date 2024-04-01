@@ -14,7 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const editor = vscode.window.activeTextEditor;
 		if (editor) {
 			const { start, end } = editor.selection;
-			formatJavaFile(start.line + 1, end.line + 1);
+			formatJavaFile(start.line, end.line);
 		}
 	});
 
@@ -24,8 +24,8 @@ export function activate(context: vscode.ExtensionContext) {
 		provideDocumentRangeFormattingEdits(document: vscode.TextDocument, range: vscode.Range, options: vscode.FormattingOptions, token: vscode.CancellationToken): vscode.TextEdit[] | Thenable<vscode.TextEdit[]> {
 			const editor = vscode.window.activeTextEditor;
 			if (editor) {
-				const startLine = range.start.line + 1;
-				const endLine = range.end.line + 1;
+				const startLine = range.start.line;
+				const endLine = range.end.line;
 				return formatJavaFile(startLine, endLine);
 			}
 			return [];
@@ -50,7 +50,9 @@ function formatJavaFile(startLine?: number, endLine?: number): vscode.TextEdit[]
 
 	let linesArgs = '';
 	if (startLine !== undefined && endLine !== undefined) {
-		linesArgs = `--line ${startLine},${endLine}`;
+		// Line index for palantir-java-format `--line` option is 1-based, so need to add 1 to both start and end.
+		// Also the range end is exclusive, so we need to add another 1 to it.
+		linesArgs = `--line ${startLine + 1}:${endLine + 2}`;
 	}
 
 	let command = '';
@@ -77,8 +79,8 @@ function formatJavaFile(startLine?: number, endLine?: number): vscode.TextEdit[]
 		const formattedText = stdout.trim();
 		if (formattedText) {
 			if (startLine !== undefined && endLine !== undefined) {
-				const startPos = new vscode.Position(startLine - 1, 0);
-				const endPos = new vscode.Position(endLine - 1, document.lineAt(endLine - 1).text.length);
+				const startPos = new vscode.Position(startLine, 0);
+				const endPos = new vscode.Position(endLine, document.lineAt(endLine).text.length);
 				const range = new vscode.Range(startPos, endPos);
 				const edit = vscode.TextEdit.replace(range, formattedText);
 				vscode.window.activeTextEditor?.edit((editBuilder) => {
