@@ -4,16 +4,29 @@ Support using [palantir-java-format](https://github.com/palantir/palantir-java-f
 
 ## Requirements
 
-1. Clone [the palantir-java-format Git repo](https://github.com/palantir/palantir-java-format).
-2. Make sure this command works in the cloned git repo: `./gradlew -i <your_java_file_path>`
+### Using the official repo
+
+1. Clone [the official palantir-java-format Git repo](https://github.com/palantir/palantir-java-format).
+2. Make sure this command works in the cloned git repo: `./gradlew run -i <your_java_file_path>`.
 3. Set `palantir-java-format.repoPath` in VSCode to the path of this cloned repo.
+
+### Using an all-deps jar file
+
+1. Clone [this forked palantir-java-format Git repo](https://github.com/kyu-sz/palantir-java-format).
+2. Compile an all-deps jar file: `./gradlew shadowJar`.
+3. Set `palantir-java-format.allDepsJarPath` in VSCode to the path of the shadow jar file.
 
 ## Extension Settings
 
 * `palantir-java-format.repoPath`: Path to the cloned repo of [palantir-java-format](https://github.com/palantir/palantir-java-format).
+* `palantir-java-format.allDepsJarPath`: Path to the all-deps Jar file of `palantir-java-format`.
 * `palantir-java-format.additionalArgs`: Additional arguments to pass to the formatter.
 
 ## Release Notes
+
+### 0.3.2
+
+Update readme to explain the way to use all-deps jar file.
 
 ### 0.3.1
 
