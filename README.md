@@ -15,6 +15,10 @@ Support using [palantir-java-format](https://github.com/palantir/palantir-java-f
 
 ## Release Notes
 
+### 0.3.0
+
+Support formatting selected lines, hence supporting formatting modified lines.
+
 ### 0.2.0
 
 Allow using all-deps jar instead of `./gradlew run`.
